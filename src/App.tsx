@@ -4,9 +4,10 @@ import { BottomNav } from './components/BottomNav'
 import { FeatureCarousel } from './components/FeatureCarousel'
 import { Header } from './components/Header'
 import { ProductGrid } from './components/ProductGrid'
-import { SearchBar } from './components/SearchBar'
 import { Icon } from './components/Icon'
 import { CatalogPage as ProductCatalogPage } from './components/CatalogPage'
+import { HomeHero } from './components/HomeHero'
+import { HomeCategoryFilters } from './components/HomeCategoryFilters'
 import { TryOnPage } from './pages/TryOnPage'
 import { SkinTonePage } from './pages/SkinTonePage'
 import { ProductDetailPage } from './pages/ProductDetailPage'
@@ -14,8 +15,9 @@ import { SmartSizingPage } from './pages/SmartSizingPage'
 import { ProfilePage } from './pages/ProfilePage'
 import { FittingRoomPreview } from './components/FittingRoomPreview'
 import type { Product } from './components/ProductCard'
+import { ProductTryOnResultPage } from './pages/ProductTryOnResultPage'
 
-type Page = 'beranda' | 'katalog' | 'simpan' | 'profil' | 'tryon' | 'skin-tone' | 'product' | 'smart-sizing' | 'fitting-room'
+type Page = 'beranda' | 'katalog' | 'simpan' | 'profil' | 'tryon' | 'skin-tone' | 'product' | 'product-tryon' | 'smart-sizing' | 'fitting-room'
 
 const defaultProduct: Product = {
   name: 'Jaket Cokelat',
@@ -27,25 +29,19 @@ const defaultProduct: Product = {
 
 function getPageFromUrl(): Page {
   const page = window.location.pathname.slice(1) as Page
-  return ['beranda', 'katalog', 'simpan', 'profil', 'tryon', 'skin-tone', 'smart-sizing', 'fitting-room'].includes(page) || page.startsWith('product') ? (page.startsWith('product') ? 'product' : page) : 'beranda'
+  return ['beranda', 'katalog', 'simpan', 'profil', 'tryon', 'skin-tone', 'smart-sizing', 'fitting-room', 'product-tryon'].includes(page) || page.startsWith('product') ? (page === 'product-tryon' ? page : page.startsWith('product') ? 'product' : page) : 'beranda'
 }
 
-function HomePage({ onTryOn, onSkinTone, onSmartSizing, onProductOpen, onNavigate }: { onTryOn: () => void; onSkinTone: () => void; onSmartSizing: () => void; onProductOpen: (product: Product) => void; onNavigate: (page: Page) => void }) {
+function HomePage({ onTryOn, onSkinTone, onSmartSizing, onProductOpen, onNavigate, wishlist, onToggleWishlist }: { onTryOn: () => void; onSkinTone: () => void; onSmartSizing: () => void; onProductOpen: (product: Product) => void; onNavigate: (page: Page) => void; wishlist: Product[]; onToggleWishlist: (product: Product) => void }) {
   return (
     <>
-      <Header onCatalog={() => onNavigate('katalog')} onProfile={() => onNavigate('profil')} />
+      <Header onProfile={() => onNavigate('profil')} />
       <main>
         <div className="content">
-          <div className="page-heading">
-            <div>
-              <span className="eyebrow">PERSONAL STYLING</span>
-              <h1>Katalog Pintar</h1>
-            </div>
-            <button className="round-button" aria-label="Buka menu"><span /></button>
-          </div>
-          <SearchBar />
+          <HomeHero />
           <FeatureCarousel onTryOn={onTryOn} onSkinTone={onSkinTone} onSmartSizing={onSmartSizing} />
-          <ProductGrid onProductOpen={onProductOpen} />
+          <HomeCategoryFilters onBrowse={() => onNavigate('katalog')} />
+          <ProductGrid onProductOpen={onProductOpen} onBrowse={() => onNavigate('katalog')} wishlist={wishlist} onToggleWishlist={onToggleWishlist} />
         </div>
       </main>
     </>
@@ -56,7 +52,7 @@ function EmptyPage({ page, onBack, onNavigate }: { page: 'simpan' | 'profil'; on
   const isWishlist = page === 'simpan'
   return (
     <>
-      <Header onCatalog={() => onNavigate('katalog')} onProfile={() => onNavigate('profil')} />
+      <Header onProfile={() => onNavigate('profil')} />
       <main className="empty-page">
         <div className="empty-icon"><Icon name={isWishlist ? 'bookmark' : 'profile'} size={28} /></div>
         <span className="eyebrow">{isWishlist ? 'KOLEKSI TERSIMPAN' : 'AKUN ANDA'}</span>
@@ -71,6 +67,16 @@ function EmptyPage({ page, onBack, onNavigate }: { page: 'simpan' | 'profil'; on
 function App() {
   const [page, setPage] = useState<Page>(getPageFromUrl)
   const [selectedProduct, setSelectedProduct] = useState<Product>(defaultProduct)
+  const [tryOnPhoto, setTryOnPhoto] = useState('')
+  const [wishlist, setWishlist] = useState<Product[]>([])
+  const [gender, setGender] = useState<'Pria' | 'Wanita' | 'Unisex'>('Pria')
+  const [skinTone, setSkinTone] = useState('Belum dianalisis')
+
+  const toggleWishlist = (product: Product) => {
+    setWishlist((current) => current.some((item) => item.name === product.name)
+      ? current.filter((item) => item.name !== product.name)
+      : [...current, product])
+  }
 
   useEffect(() => {
     const handlePopState = () => setPage(getPageFromUrl())
@@ -92,27 +98,31 @@ function App() {
   }
 
   if (page === 'tryon') {
-    return <TryOnPage onBack={() => navigate('katalog')} onBuy={(product) => { setSelectedProduct(product); navigate('product') }} />
+    return <div className="app-shell"><TryOnPage onBack={() => navigate('katalog')} onWishlist={() => navigate('simpan')} wishlist={wishlist} onToggleWishlist={toggleWishlist} onBuy={(product) => { setSelectedProduct(product); navigate('product') }} /><BottomNav activePage={page} onNavigate={(nextPage) => navigate(nextPage as Page)} /></div>
   }
 
   if (page === 'skin-tone') {
-    return <SkinTonePage onBack={() => navigate('katalog')} onTryOn={() => navigate('tryon')} />
+    return <div className="app-shell"><SkinTonePage onBack={() => navigate('katalog')} onTryOn={() => navigate('tryon')} onToneDetected={setSkinTone} /><BottomNav activePage={page} onNavigate={(nextPage) => navigate(nextPage as Page)} /></div>
   }
 
   if (page === 'product') {
-    return <ProductDetailPage product={selectedProduct} onBack={() => navigate('katalog')} onTryOn={() => navigate('tryon')} />
+    return <div className="app-shell"><ProductDetailPage product={selectedProduct} onBack={() => navigate('katalog')} onTryOn={(product, photoUrl) => { setSelectedProduct(product); setTryOnPhoto(photoUrl); navigate('product-tryon') }} /><BottomNav activePage={page} onNavigate={(nextPage) => navigate(nextPage as Page)} /></div>
+  }
+
+  if (page === 'product-tryon') {
+    return <div className="app-shell"><ProductTryOnResultPage product={selectedProduct} photoUrl={tryOnPhoto} onBack={() => navigate('product')} onTryAnother={() => navigate('product')} /><BottomNav activePage={page} onNavigate={(nextPage) => navigate(nextPage as Page)} /></div>
   }
 
   if (page === 'smart-sizing') {
-    return <SmartSizingPage onBack={() => navigate('katalog')} />
+    return <div className="app-shell"><SmartSizingPage onBack={() => navigate('katalog')} gender={gender} onGenderChange={setGender} /><BottomNav activePage={page} onNavigate={(nextPage) => navigate(nextPage as Page)} /></div>
   }
 
   if (page === 'fitting-room') {
-    return <FittingRoomPreview onBack={() => navigate('profil')} />
+    return <div className="app-shell"><FittingRoomPreview onBack={() => navigate('profil')} /><BottomNav activePage={page} onNavigate={(nextPage) => navigate(nextPage as Page)} /></div>
   }
 
   if (page === 'profil') {
-    return <ProfilePage onFittingRoom={() => navigate('fitting-room')} onCatalog={() => navigate('katalog')} onNavigate={(nextPage) => navigate(nextPage as Page)} />
+    return <ProfilePage onHome={() => navigate('beranda')} onCatalog={() => navigate('katalog')} onSmartSizing={() => navigate('smart-sizing')} onTryOn={() => navigate('tryon')} onSkinTone={() => navigate('skin-tone')} onNavigate={(nextPage) => navigate(nextPage as Page)} gender={gender} skinTone={skinTone} />
   }
 
   return (
@@ -120,8 +130,8 @@ function App() {
       {page === 'simpan'
         ? <EmptyPage page={page} onBack={() => navigate('katalog')} onNavigate={navigate} />
         : page === 'katalog'
-          ? <ProductCatalogPage onTryOn={() => navigate('tryon')} onSkinTone={() => navigate('skin-tone')} onSmartSizing={() => navigate('smart-sizing')} onProductOpen={openProduct} />
-          : <HomePage onTryOn={() => navigate('tryon')} onSkinTone={() => navigate('skin-tone')} onSmartSizing={() => navigate('smart-sizing')} onProductOpen={openProduct} onNavigate={navigate} />}
+          ? <ProductCatalogPage onProductOpen={openProduct} onProfile={() => navigate('profil')} wishlist={wishlist} onToggleWishlist={toggleWishlist} />
+          : <HomePage onTryOn={() => navigate('tryon')} onSkinTone={() => navigate('skin-tone')} onSmartSizing={() => navigate('smart-sizing')} onProductOpen={openProduct} onNavigate={navigate} wishlist={wishlist} onToggleWishlist={toggleWishlist} />}
       <BottomNav activePage={page} onNavigate={(nextPage) => navigate(nextPage as Page)} />
     </div>
   )

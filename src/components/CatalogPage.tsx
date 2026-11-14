@@ -1,20 +1,36 @@
 import { useMemo, useState } from 'react'
-import { CatalogAssistantCard } from './CatalogAssistantCard'
 import { Icon } from './Icon'
 import { ProductCard, type Product } from './ProductCard'
 import { SearchBar } from './SearchBar'
 import { products } from '../data/products'
+import { Header } from './Header'
 
 type CatalogPageProps = {
-  onTryOn: () => void
-  onSkinTone: () => void
-  onSmartSizing: () => void
   onProductOpen: (product: Product) => void
+  onProfile: () => void
+  wishlist: Product[]
+  onToggleWishlist: (product: Product) => void
 }
 
 const categories = ['Semua', 'Pria', 'Wanita', 'Hoodie', 'Jaket', 'Kemeja', 'Celana']
 
-export function CatalogPage({ onTryOn, onSkinTone, onSmartSizing, onProductOpen }: CatalogPageProps) {
+function ProductRail({ title, eyebrow, items, onProductOpen, wishlist, onToggleWishlist }: { title: string; eyebrow: string; items: Product[]; onProductOpen: (product: Product) => void; wishlist: Product[]; onToggleWishlist: (product: Product) => void }) {
+  if (items.length === 0) return null
+
+  return (
+    <section className="catalog-rail">
+      <div className="catalog-results-heading">
+        <div><span className="eyebrow accent">{eyebrow}</span><h2>{title}</h2></div>
+        <span>{items.length} item</span>
+      </div>
+      <div className="catalog-rail-track">
+        {items.map((product) => <ProductCard key={product.name} product={product} onOpen={onProductOpen} liked={wishlist.some((item) => item.name === product.name)} onToggleLike={onToggleWishlist} />)}
+      </div>
+    </section>
+  )
+}
+
+export function CatalogPage({ onProductOpen, onProfile, wishlist, onToggleWishlist }: CatalogPageProps) {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('Semua')
   const [sort, setSort] = useState('Relevan')
@@ -32,6 +48,7 @@ export function CatalogPage({ onTryOn, onSkinTone, onSmartSizing, onProductOpen 
 
   return (
     <>
+      <Header onProfile={onProfile} />
       <header className="catalog-header">
         <div className="catalog-header-copy">
           <span className="eyebrow accent">EXPLORE COLLECTION</span>
@@ -42,11 +59,6 @@ export function CatalogPage({ onTryOn, onSkinTone, onSmartSizing, onProductOpen 
       </header>
       <main className="catalog-page-content">
         <SearchBar value={query} onChange={setQuery} placeholder="Cari produk, kategori, atau gaya..." />
-        <section className="catalog-ai-strip">
-          <div className="catalog-ai-icon"><Icon name="sparkles" size={18} /></div>
-          <div><strong>Belanja lebih pintar dengan AI</strong><small>Rekomendasi ukuran dan outfit sesuai profilmu</small></div>
-          <button onClick={onTryOn}>Coba AI <Icon name="arrow" size={14} /></button>
-        </section>
         <div className="catalog-toolbar">
           <div className="catalog-count"><strong>{filteredProducts.length} produk</strong><span> siap dieksplor</span></div>
           <label>Urutkan
@@ -59,18 +71,23 @@ export function CatalogPage({ onTryOn, onSkinTone, onSmartSizing, onProductOpen 
         <div className="catalog-categories" aria-label="Filter kategori">
           {categories.map((item) => <button key={item} className={category === item ? 'active' : ''} onClick={() => setCategory(item)}>{item}</button>)}
         </div>
-        <div className="catalog-feature-links">
-          <button onClick={onSkinTone}><Icon name="sparkles" size={14} /> Warna kulit AI</button>
-          <button onClick={onSmartSizing}><Icon name="shirt" size={14} /> Smart sizing</button>
-          <button onClick={onTryOn}><Icon name="layers" size={14} /> Full try-on</button>
-        </div>
         <section className="catalog-results">
-          <div className="catalog-results-heading"><h2>Semua pilihan untukmu</h2><span>{category}</span></div>
+          <ProductRail title="Pilihan untukmu" eyebrow="KOLEKSI TERBARU" items={filteredProducts} onProductOpen={onProductOpen} wishlist={wishlist} onToggleWishlist={onToggleWishlist} />
+          <ProductRail title="Koleksi Wanita" eyebrow="WOMEN'S EDIT" items={filteredProducts.filter((product) => product.category.includes('WANITA'))} onProductOpen={onProductOpen} wishlist={wishlist} onToggleWishlist={onToggleWishlist} />
+          <ProductRail title="Koleksi Pria" eyebrow="MEN'S EDIT" items={filteredProducts.filter((product) => product.category.includes('PRIA'))} onProductOpen={onProductOpen} wishlist={wishlist} onToggleWishlist={onToggleWishlist} />
+          <ProductRail title="Hoodie & Sweatshirt" eyebrow="CASUAL ESSENTIALS" items={filteredProducts.filter((product) => product.category.includes('HOODIE') || product.name.toLowerCase().includes('sweater'))} onProductOpen={onProductOpen} wishlist={wishlist} onToggleWishlist={onToggleWishlist} />
+          <ProductRail title="Celana Favorit" eyebrow="BOTTOMS" items={filteredProducts.filter((product) => product.category.includes('CELANA') || product.category.includes('BAWAHAN'))} onProductOpen={onProductOpen} wishlist={wishlist} onToggleWishlist={onToggleWishlist} />
           {filteredProducts.length > 0
-            ? <div className="product-grid catalog-product-grid">{filteredProducts.map((product) => <ProductCard key={product.name} product={product} onOpen={onProductOpen} />)}</div>
+            ? null
             : <div className="catalog-empty"><Icon name="search" size={24} /><strong>Produk tidak ditemukan</strong><span>Coba kata kunci atau kategori lain.</span></div>}
+          {filteredProducts.length > 0 && <nav className="catalog-pagination" aria-label="Halaman katalog">
+            <button className="current" aria-current="page">1</button>
+            <button>2</button>
+            <button>3</button>
+            <span>...</span>
+            <button aria-label="Halaman berikutnya">→</button>
+          </nav>}
         </section>
-        <CatalogAssistantCard onStart={onSmartSizing} />
       </main>
     </>
   )

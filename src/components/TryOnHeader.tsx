@@ -1,4 +1,5 @@
 import { Icon } from './Icon'
+import logo from '../assets/logo.png'
 
 type TryOnHeaderProps = {
   onBack: () => void
@@ -11,7 +12,7 @@ export function TryOnHeader({ onBack }: TryOnHeaderProps) {
         <Icon name="back" size={20} />
       </button>
       <div className="tryon-title">
-        <span className="ai-mark">AI</span>
+        <img className="feature-brand-logo" src={logo} alt="FITURA" />
         <strong>Full Try-On 1 Set</strong>
       </div>
       <div className="tryon-actions">

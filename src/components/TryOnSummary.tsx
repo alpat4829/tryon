@@ -5,12 +5,14 @@ import { VirtualTryOnResult } from './VirtualTryOnResult'
 type TryOnSummaryProps = {
   top: TryOnProduct
   bottom: TryOnProduct
+  onRemoveTop: () => void
+  onRemoveBottom: () => void
   onGenerate: () => void
   generated: boolean
   onBuy: () => void
 }
 
-export function TryOnSummary({ top, bottom, onGenerate, generated, onBuy }: TryOnSummaryProps) {
+export function TryOnSummary({ top, bottom, onRemoveTop, onRemoveBottom, onGenerate, generated, onBuy }: TryOnSummaryProps) {
   return (
     <>
       <section className="tryon-card selected-box">
@@ -25,6 +27,7 @@ export function TryOnSummary({ top, bottom, onGenerate, generated, onBuy }: TryO
             <strong>{top.name}</strong>
             <span>{top.price}</span>
           </div>
+          <button className="selected-remove" onClick={onRemoveTop} aria-label={`Hapus ${top.name}`}><Icon name="close" size={15} /></button>
         </div>
         <div className="selected-item">
           <img src={bottom.image} alt={bottom.name} />
@@ -33,25 +36,14 @@ export function TryOnSummary({ top, bottom, onGenerate, generated, onBuy }: TryO
             <strong>{bottom.name}</strong>
             <span>{bottom.price}</span>
           </div>
-        </div>
-      </section>
-      <section className="tryon-card harmony-card">
-        <div className="harmony-heading">
-          <div><Icon name="sparkles" size={19} /><strong>Analisis Harmoni Setelan</strong></div>
-          <b>98%<small>Sempurna</small></b>
-        </div>
-        <p>Kombinasi siluet relaks atasan earthy dengan aksen utility bawahan menciptakan tampilan yang proporsional dan seimbang di tubuh Anda.</p>
-        <div className="harmony-tags">
-          <span><small>REKOMENDASI SET</small>Atasan {top.size} • Celana {bottom.size}</span>
-          <span><small>PROFIL ANDA</small>Alex (178 cm, 72 kg)</span>
+          <button className="selected-remove" onClick={onRemoveBottom} aria-label={`Hapus ${bottom.name}`}><Icon name="close" size={15} /></button>
         </div>
       </section>
       <section className="generate-card">
         <div>
-          <Icon name="sparkles" size={20} />
-          <div><strong>Konfirmasi Pilihan Pakaian</strong><small>Siap membuat simulasi avatar 3D interaktif</small></div>
+          <div><strong>Konfirmasi pilihan pakaian</strong><small>Hasil try-on akan tampil di bawah pilihan ini</small></div>
         </div>
-        <button onClick={onGenerate}>{generated ? <><Icon name="check" size={17} /> Set Berhasil Digenerate!</> : <><Icon name="sparkles" size={17} /> Generate Full Try-On</>}</button>
+        <button onClick={onGenerate}>{generated ? 'Hasil sudah diperbarui' : 'Konfirmasi & Generate'}</button>
       </section>
       {generated && <VirtualTryOnResult top={top} bottom={bottom} onBuy={onBuy} />}
     </>

@@ -1,44 +1,37 @@
-import { useRef, type ChangeEvent } from 'react'
 import { Icon } from './Icon'
 
 type BodyMeasurementFormProps = {
   height: string
   weight: string
-  imageUrl: string
+  heightUnit: 'cm' | 'ft'
+  weightUnit: 'kg' | 'lbs'
+  gender: 'Pria' | 'Wanita' | 'Unisex'
   onHeightChange: (value: string) => void
   onWeightChange: (value: string) => void
-  onImageChange: (value: string) => void
+  onHeightUnitChange: (unit: 'cm' | 'ft') => void
+  onWeightUnitChange: (unit: 'kg' | 'lbs') => void
+  onGenderChange: (gender: 'Pria' | 'Wanita' | 'Unisex') => void
   onConfirm: () => void
 }
 
-export function BodyMeasurementForm({ height, weight, imageUrl, onHeightChange, onWeightChange, onImageChange, onConfirm }: BodyMeasurementFormProps) {
-  const fileInput = useRef<HTMLInputElement>(null)
-  const handleFile = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (file) onImageChange(URL.createObjectURL(file))
-  }
-
+export function BodyMeasurementForm({ height, weight, heightUnit, weightUnit, gender, onHeightChange, onWeightChange, onHeightUnitChange, onWeightUnitChange, onGenderChange, onConfirm }: BodyMeasurementFormProps) {
   return (
     <section className="smart-form-card">
       <div className="smart-card-heading"><div><i /> <strong>Masukkan Ukuran Tubuh</strong></div><span>MANDIRI</span></div>
       <div className="measurement-field">
-        <div className="field-label"><div><strong>Tinggi Badan</strong><small>Kalibrasi presisi</small></div><span>cm</span></div>
-        <div className="measurement-input"><input inputMode="numeric" value={height} onChange={(event) => onHeightChange(event.target.value)} aria-label="Tinggi badan" /><b>cm</b></div>
-        <input className="measurement-range" type="range" min="120" max="220" value={height || 175} onChange={(event) => onHeightChange(event.target.value)} aria-label="Atur tinggi badan" />
+        <div className="field-label"><div><strong>Tinggi Badan</strong><small>Kalibrasi presisi</small></div><div className="unit-switch">{(['cm', 'ft'] as const).map((unit) => <button key={unit} className={heightUnit === unit ? 'active' : ''} onClick={() => onHeightUnitChange(unit)}>{unit}</button>)}</div></div>
+        <div className="measurement-input"><input inputMode="decimal" value={height} onChange={(event) => onHeightChange(event.target.value)} aria-label="Tinggi badan" /><b>{heightUnit}</b></div>
+        <input className="measurement-range" type="range" min={heightUnit === 'cm' ? 120 : 3.9} max={heightUnit === 'cm' ? 220 : 7.2} step={heightUnit === 'cm' ? 1 : 0.1} value={height || (heightUnit === 'cm' ? 175 : 5.7)} onChange={(event) => onHeightChange(event.target.value)} aria-label="Atur tinggi badan" />
       </div>
       <div className="measurement-field">
-        <div className="field-label"><div><strong>Berat Badan</strong><small>Digunakan untuk proporsi</small></div><span>kg</span></div>
-        <div className="measurement-input"><input inputMode="decimal" value={weight} onChange={(event) => onWeightChange(event.target.value)} aria-label="Berat badan" /><b>kg</b></div>
-        <input className="measurement-range" type="range" min="35" max="150" value={weight || 72} onChange={(event) => onWeightChange(event.target.value)} aria-label="Atur berat badan" />
+        <div className="field-label"><div><strong>Berat Badan</strong><small>Digunakan untuk proporsi</small></div><div className="unit-switch">{(['kg', 'lbs'] as const).map((unit) => <button key={unit} className={weightUnit === unit ? 'active' : ''} onClick={() => onWeightUnitChange(unit)}>{unit}</button>)}</div></div>
+        <div className="measurement-input"><input inputMode="decimal" value={weight} onChange={(event) => onWeightChange(event.target.value)} aria-label="Berat badan" /><b>{weightUnit}</b></div>
+        <input className="measurement-range" type="range" min={weightUnit === 'kg' ? 35 : 77} max={weightUnit === 'kg' ? 150 : 330} step={weightUnit === 'kg' ? 1 : 1} value={weight || (weightUnit === 'kg' ? 72 : 159)} onChange={(event) => onWeightChange(event.target.value)} aria-label="Atur berat badan" />
       </div>
-      <div className="posture-upload">
-        <div className="posture-preview">
-          {imageUrl ? <img src={imageUrl} alt="Foto postur pengguna" /> : <><Icon name="profile" size={28} /><span>Template Foto Postur</span><small>Gunakan foto seluruh badan</small></>}
-        </div>
-        <div className="upload-actions">
-          <button onClick={() => fileInput.current?.click()}><Icon name="search" size={15} /> Buka Kamera</button>
-          <button onClick={() => fileInput.current?.click()}><Icon name="layers" size={15} /> Pilih Galeri</button>
-          <input ref={fileInput} type="file" accept="image/*" onChange={handleFile} hidden />
+      <div className="gender-field">
+        <div className="field-label"><div><strong>Jenis Kelamin</strong><small>Untuk rekomendasi ukuran yang lebih relevan</small></div></div>
+        <div className="gender-options">
+          {(['Pria', 'Wanita', 'Unisex'] as const).map((option) => <button key={option} className={gender === option ? 'active' : ''} onClick={() => onGenderChange(option)}>{option}</button>)}
         </div>
       </div>
       <button className="smart-confirm" onClick={onConfirm}><Icon name="check" size={17} /> Konfirmasi</button>

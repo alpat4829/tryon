@@ -21,7 +21,7 @@ export function ProductInfo({ product }: ProductInfoProps) {
         <strong className="detail-price">{product.price}</strong>
       </section>
       <section className="size-section">
-        <div className="size-heading"><strong>Pilih Ukuran</strong><button>Panduan Ukuran</button></div>
+        <div className="size-heading"><strong>Pilih Ukuran</strong></div>
         <div className="size-options">
           {sizes.map((size) => <button className={selectedSize === size ? 'active' : ''} onClick={() => setSelectedSize(size)} key={size}>{size}{size === 'L' && <i />}</button>)}
         </div>

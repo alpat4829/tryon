@@ -12,10 +12,13 @@ export type Product = {
 type ProductCardProps = {
   product: Product
   onOpen?: (product: Product) => void
+  liked?: boolean
+  onToggleLike?: (product: Product) => void
 }
 
-export function ProductCard({ product, onOpen }: ProductCardProps) {
-  const [liked, setLiked] = useState(false)
+export function ProductCard({ product, onOpen, liked: controlledLiked, onToggleLike }: ProductCardProps) {
+  const [localLiked, setLocalLiked] = useState(false)
+  const liked = controlledLiked ?? localLiked
 
   return (
     <article className="product-card" onClick={() => onOpen?.(product)}>
@@ -26,7 +29,8 @@ export function ProductCard({ product, onOpen }: ProductCardProps) {
           className={`favorite-button ${liked ? 'liked' : ''}`}
           onClick={(event) => {
             event.stopPropagation()
-            setLiked((current) => !current)
+            if (onToggleLike) onToggleLike(product)
+            else setLocalLiked((current) => !current)
           }}
           aria-label={liked ? `Hapus ${product.name} dari favorit` : `Tambah ${product.name} ke favorit`}
         >

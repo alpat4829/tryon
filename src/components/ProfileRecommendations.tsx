@@ -17,7 +17,11 @@ const recommendations = [
   },
 ]
 
-export function ProfileRecommendations() {
+type ProfileRecommendationsProps = {
+  onMore: () => void
+}
+
+export function ProfileRecommendations({ onMore }: ProfileRecommendationsProps) {
   return (
     <section className="profile-recommendations">
       <div className="recommendations-heading">
@@ -40,6 +44,7 @@ export function ProfileRecommendations() {
           </article>
         ))}
       </div>
+      <button className="profile-more-recommendations" onClick={onMore}>Lihat rekomendasi lainnya <Icon name="arrow" size={15} /></button>
     </section>
   )
 }

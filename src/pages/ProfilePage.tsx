@@ -1,28 +1,31 @@
 import { ProfileCard } from '../components/ProfileCard'
-import { ProfileGuarantee } from '../components/ProfileGuarantee'
 import { ProfileHeader } from '../components/ProfileHeader'
-import { SavedTryOn } from '../components/SavedTryOn'
 import { ProfileRecommendations } from '../components/ProfileRecommendations'
 import { Header } from '../components/Header'
 import { BottomNav } from '../components/BottomNav'
+import { FeatureCarousel } from '../components/FeatureCarousel'
 
 type ProfilePageProps = {
-  onFittingRoom: () => void
+  onHome: () => void
   onCatalog: () => void
+  onSmartSizing: () => void
+  onTryOn: () => void
+  onSkinTone: () => void
   onNavigate: (page: string) => void
+  gender: 'Pria' | 'Wanita' | 'Unisex'
+  skinTone: string
 }
 
-export function ProfilePage({ onFittingRoom, onCatalog, onNavigate }: ProfilePageProps) {
+export function ProfilePage({ onHome, onCatalog, onSmartSizing, onTryOn, onSkinTone, onNavigate, gender, skinTone }: ProfilePageProps) {
   return (
     <div className="profile-page app-shell">
-      <Header onCatalog={onCatalog} onProfile={() => undefined} />
+      <Header onProfile={() => undefined} />
       <main className="profile-content">
         <ProfileHeader onSettings={() => undefined} />
-        <ProfileCard onEdit={() => undefined} />
-        <SavedTryOn onOpenFittingRoom={onFittingRoom} />
-        <ProfileRecommendations />
-        <ProfileGuarantee />
-        <button className="profile-catalog-button" onClick={onCatalog}>Kembali ke katalog <span>→</span></button>
+        <ProfileCard onEdit={() => undefined} gender={gender} skinTone={skinTone} />
+        <ProfileRecommendations onMore={onCatalog} />
+        <FeatureCarousel onTryOn={onTryOn} onSkinTone={onSkinTone} onSmartSizing={onSmartSizing} />
+        <button className="profile-catalog-button" onClick={onHome}>Kembali ke beranda <span>→</span></button>
       </main>
       <BottomNav activePage="profil" onNavigate={onNavigate} />
     </div>

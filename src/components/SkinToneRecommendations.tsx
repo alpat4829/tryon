@@ -31,7 +31,7 @@ export function SkinToneRecommendations({ onTryOn }: SkinToneRecommendationsProp
           <button aria-label={`Lihat ${item.name}`}><Icon name="arrow" size={17} /></button>
         </article>
       ))}
-      <button className="recommendation-tryon" onClick={onTryOn}><Icon name="layers" size={17} /> Coba Virtual dengan Palet Ini</button>
+      <button className="recommendation-tryon" onClick={onTryOn}><Icon name="layers" size={17} /> Uji Coba Full Try-On</button>
     </section>
   )
 }

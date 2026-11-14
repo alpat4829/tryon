@@ -1,4 +1,5 @@
 import { Icon } from './Icon'
+import logo from '../assets/logo.png'
 
 type FittingRoomPreviewProps = {
   onBack: () => void
@@ -9,7 +10,7 @@ export function FittingRoomPreview({ onBack }: FittingRoomPreviewProps) {
     <div className="fitting-page">
       <header className="fitting-topbar">
         <button onClick={onBack} aria-label="Kembali"><Icon name="back" size={20} /></button>
-        <div><span className="ai-mark">AI</span><strong>AI Fitting Room</strong></div>
+        <div><img className="feature-brand-logo" src={logo} alt="FITURA" /><strong>AI Fitting Room</strong></div>
         <button aria-label="Tutup"><Icon name="close" size={19} /></button>
       </header>
       <main className="fitting-content">

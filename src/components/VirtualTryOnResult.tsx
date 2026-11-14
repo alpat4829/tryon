@@ -40,9 +40,22 @@ export function VirtualTryOnResult({ top, bottom, onBuy }: VirtualTryOnResultPro
         <span><i /> Outfit siap dicoba pada avatar kamu</span>
         <button>Bagikan hasil <Icon name="arrow" size={14} /></button>
       </div>
+      <section className="tryon-card harmony-card">
+        <div className="harmony-heading">
+          <div><Icon name="sparkles" size={19} /><strong>Analisis AI Lengkap</strong></div>
+          <b>98%<small>Sangat cocok</small></b>
+        </div>
+        <p>Warna dan proporsi atasan {top.name} berpadu seimbang dengan {bottom.name}. Potongan ini memberi siluet yang rapi untuk profil tubuh atletis dan tetap nyaman untuk aktivitas harian.</p>
+        <div className="harmony-tags">
+          <span><small>UKURAN ATASAN</small>Atasan {top.size}</span>
+          <span><small>UKURAN BAWAHAN</small>Bawahan {bottom.size}</span>
+          <span><small>PROPORSI</small>Seimbang</span>
+          <span><small>KENYAMANAN</small>Nyaman bergerak</span>
+        </div>
+      </section>
       <div className="tryon-purchase-bar">
         <div><small>Paket 1 Set Lengkap</small><strong>{totalPrice}</strong></div>
-        <button onClick={onBuy}><Icon name="cart" size={17} /> Beli 1 Set <span>• {totalPrice}</span></button>
+        <button onClick={onBuy}><Icon name="cart" size={17} /> Tambah ke keranjang</button>
       </div>
     </section>
   )

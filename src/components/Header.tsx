@@ -1,22 +1,21 @@
-import { Icon } from './Icon'
+import { useState } from 'react'
+import logoCombination from '../assets/logokombinasi.png'
+import { SearchBar } from './SearchBar'
 
 type HeaderProps = {
-  onCatalog?: () => void
   onProfile?: () => void
 }
 
-export function Header({ onCatalog, onProfile }: HeaderProps) {
+export function Header({ onProfile }: HeaderProps) {
+  const [query, setQuery] = useState('')
+
   return (
     <header className="topbar">
       <div className="brand">
-        <div className="brand-mark">F</div>
-        <span>FITURA</span>
+        <img className="brand-logo-combination" src={logoCombination} alt="FITURA" />
       </div>
       <div className="topbar-actions">
-        <button className="catalog-link" onClick={onCatalog}>Katalog Utama</button>
-        <button className="icon-button" aria-label="Cari">
-          <Icon name="search" size={18} />
-        </button>
+        <SearchBar value={query} onChange={setQuery} placeholder="Cari produk & gaya" showFilter={false} />
         <button className="avatar" aria-label="Profil" onClick={onProfile}>A</button>
       </div>
     </header>

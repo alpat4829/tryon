@@ -2,9 +2,11 @@ import { Icon } from './Icon'
 
 type ProfileCardProps = {
   onEdit: () => void
+  gender: 'Pria' | 'Wanita' | 'Unisex'
+  skinTone: string
 }
 
-export function ProfileCard({ onEdit }: ProfileCardProps) {
+export function ProfileCard({ onEdit, gender, skinTone }: ProfileCardProps) {
   return (
     <section className="profile-card">
       <div className="profile-card-top">
@@ -20,6 +22,8 @@ export function ProfileCard({ onEdit }: ProfileCardProps) {
         <div><small>BMI</small><strong>22.7</strong></div>
         <div><small>BENTUK<br />TUBUH</small><strong>Atletis</strong></div>
       </div>
+      <div className="profile-gender"><small>JENIS KELAMIN</small><strong>{gender}</strong></div>
+      <div className="profile-gender"><small>TONE WARNA KULIT</small><strong>{skinTone}</strong></div>
     </section>
   )
 }
